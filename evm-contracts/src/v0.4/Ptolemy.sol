@@ -295,7 +295,7 @@ contract Ptolemy is ChainlinkRequestInterface, PtolemyInterface, Ownable {
     assembly { // solhint-disable-line no-inline-assembly
       funcSelector := mload(add(_data, 32))
     }
-    require(funcSelector == this.PtolemyRequest.selector, "Must use whitelisted functions");
+    require(funcSelector == this.ptolemyRequest.selector, "Must use whitelisted functions");
     _;
   }
 
