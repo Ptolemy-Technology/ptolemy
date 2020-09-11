@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 interface ChainlinkRequestInterface {
-  function ptolemyRequest(
+  function PtolemyRequest(
     address sender,
     uint256 payment,
     bytes32 id,
