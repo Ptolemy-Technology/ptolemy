@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
-interface OracleInterface {
-  function fulfillOracleRequest(
+interface PtolemyInterface {
+  function fulfillPtolemyRequest(
     bytes32 requestId,
     uint256 payment,
     address callbackAddress,
