@@ -91,7 +91,7 @@ contract Ptolemy is ChainlinkRequestInterface, PtolemyInterface, Ownable {
    * @param _dataVersion The specified data version
    * @param _data The CBOR payload of the request
    */
-  function PtolemyRequest(
+  function ptolemyRequest(
     address _sender,
     uint256 _payment,
     bytes32 _specId,
