@@ -71,7 +71,7 @@ contract ChainlinkClient {
    * @dev Generates and stores a request ID, increments the local nonce, and uses `transferAndCall` to
    * send LINK which creates a request on the target oracle contract.
    * Emits ChainlinkRequested event.
-   * @param _oracle The address of the oracle for the request
+   * @param _ptolemy The address of the oracle for the request
    * @param _req The initialized Chainlink Request
    * @param _payment The amount of LINK to send for the request
    * @return The request ID
@@ -116,7 +116,7 @@ contract ChainlinkClient {
 
   /**
    * @notice Sets the stored oracle address
-   * @param _oracle The address of the oracle contract
+   * @param _ptolemy The address of the oracle contract
    */
   function setChainlinkPtolemy(address _ptolemy) internal {
     ptolemy = ChainlinkRequestInterface(_ptolemy);
@@ -165,7 +165,7 @@ contract ChainlinkClient {
   /**
    * @notice Allows for a request which was created on another contract to be fulfilled
    * on this contract
-   * @param _oracle The address of the oracle contract that will fulfill the request
+   * @param _ptolemy The address of the oracle contract that will fulfill the request
    * @param _requestId The request ID used for the response
    */
   function addChainlinkExternalRequest(address _ptolemy, bytes32 _requestId)
