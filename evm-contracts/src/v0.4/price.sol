@@ -1,6 +1,6 @@
 pragma solidity >=0.4.21 <0.7.0;
-import "https://github.com/smartcontractkit/chainlink/evm-contracts/src/v0.4/PChainlinkClient.sol";
-import "https://github.com/smartcontractkit/chainlink/evm-contracts/src/v0.4/vendor/Ownable.sol";
+import "https://github.com/Ptolemy-Technology/ptolemy/evm-contracts/src/v0.4/PChainlinkClient.sol";
+import "https://github.com/Ptolemy-Technology/ptolemy/evm-contracts/src/v0.4/vendor/Ownable.sol";
 contract price is ChainlinkClient, Ownable{
     event HighestBidIncreased(address bidder, uint amount); // Event
 
