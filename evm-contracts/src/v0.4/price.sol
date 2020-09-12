@@ -1,5 +1,5 @@
 pragma solidity >=0.4.21 <0.7.0;
-import "https://github.com/smartcontractkit/chainlink/evm-contracts/src/v0.4/ChainlinkClient.sol";
+import "https://github.com/smartcontractkit/chainlink/evm-contracts/src/v0.4/PChainlinkClient.sol";
 import "https://github.com/smartcontractkit/chainlink/evm-contracts/src/v0.4/vendor/Ownable.sol";
 contract price is ChainlinkClient, Ownable{
     event HighestBidIncreased(address bidder, uint amount); // Event
@@ -23,19 +23,16 @@ contract price is ChainlinkClient, Ownable{
   constructor() public Ownable() {
     setPublicChainlinkToken();
   }  
-
-  function requestPrice(address _oracle, string _jobId)
+ function requestPrice(address _oracle, string _jobId,string _imageUrl)
   public
   onlyOwner
  
 {
   Chainlink.Request memory req = buildChainlinkRequest(stringToBytes32(_jobId), this, this.fulfill.selector);
-   req.add("get", "http://localhost:3000");
- // req.add("endpoint", "mwa-historic");
- // req.add("coin", _coin);
- // req.add("market", _market);
-  req.add("copyPath", "price_usd");
-  req.addInt("times", 100);
+ req.add("queryParams", _imageUrl);
+ //req.add("version","2018-3-19");
+ //req.add("classifier_ids","default");
+ // req.addInt("times",100);
   sendChainlinkRequestTo(_oracle, req, ORACLE_PAYMENT);
 } 
     
@@ -61,6 +58,10 @@ contract price is ChainlinkClient, Ownable{
     
     
 }
+
+
+
+
 
 
 
