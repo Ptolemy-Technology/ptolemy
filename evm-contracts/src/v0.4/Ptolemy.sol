@@ -2,8 +2,8 @@ pragma solidity 0.4.24;
 
 import "./vendor/Ownable.sol";
 import "./vendor/SafeMath.sol";
-import "./interfaces/ChainlinkRequestInterface.sol";
-import "./interfaces/PtolemyInterface.sol";
+import "https://github.com/Ptolemy-Technology/ptolemy/evm-contracts/src/v0.4/interfaces/ChainlinkRequestInterface.sol";
+import "https://github.com/Ptolemy-Technology/ptolemy/evm-contracts/src/v0.4/interfaces/PtolemyInterface.sol";
 import "./interfaces/LinkTokenInterface.sol";
 
 /**
@@ -75,7 +75,7 @@ contract Ptolemy is ChainlinkRequestInterface, PtolemyInterface, Ownable {
       mstore(add(_data, 68), _amount) // ensure correct amount is passed
     }
     // solhint-disable-next-line avoid-low-level-calls
-    require(address(this).delegatecall(_data), "Unable to create request"); // calls PtolemyRequest
+    require(address(this).delegatecall(_data), "Unable to create request"); // calls ptolemyRequest
   }
 
   /**
