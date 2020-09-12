@@ -1,5 +1,5 @@
 pragma solidity >=0.4.21 <0.7.0;
-import "https://github.com/Ptolemy-Technology/ptolemy/evm-contracts/src/v0.4/PChainlinkClient.sol";
+import "https://github.com/Ptolemy-Technology/ptolemy/evm-contracts/src/v0.4/ChainlinkClient.sol";
 import "https://github.com/Ptolemy-Technology/ptolemy/evm-contracts/src/v0.4/vendor/Ownable.sol";
 contract price is ChainlinkClient, Ownable{
     event HighestBidIncreased(address bidder, uint amount); // Event
@@ -23,7 +23,7 @@ contract price is ChainlinkClient, Ownable{
   constructor() public Ownable() {
     setPublicChainlinkToken();
   }  
- function requestPrice(address _oracle, string _jobId,string _imageUrl)
+ function requestPrice(address _ptolemy, string _jobId,string _imageUrl)
   public
   onlyOwner
  
@@ -33,7 +33,7 @@ contract price is ChainlinkClient, Ownable{
  //req.add("version","2018-3-19");
  //req.add("classifier_ids","default");
  // req.addInt("times",100);
-  sendChainlinkRequestTo(_oracle, req, ORACLE_PAYMENT);
+  sendChainlinkRequestTo(_ptolemy, req, ORACLE_PAYMENT);
 } 
     
     

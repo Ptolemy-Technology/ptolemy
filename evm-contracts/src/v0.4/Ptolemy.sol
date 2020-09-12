@@ -2,7 +2,7 @@ pragma solidity 0.4.24;
 
 import "./vendor/Ownable.sol";
 import "./vendor/SafeMath.sol";
-import "./interfaces/PChainlinkRequestInterface.sol";
+import "./interfaces/ChainlinkRequestInterface.sol";
 import "./interfaces/PtolemyInterface.sol";
 import "./interfaces/LinkTokenInterface.sol";
 
