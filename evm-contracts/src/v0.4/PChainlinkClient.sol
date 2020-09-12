@@ -28,7 +28,7 @@ contract ChainlinkClient {
   ENSInterface private ens;
   bytes32 private ensNode;
   LinkTokenInterface private link;
-  ChainlinkRequestInterface private oracle;
+  ChainlinkRequestInterface private ptolemy;
   uint256 private requests = 1;
   mapping(bytes32 => address) private pendingRequests;
 
@@ -63,7 +63,7 @@ contract ChainlinkClient {
     internal
     returns (bytes32)
   {
-    return sendChainlinkRequestTo(oracle, _req, _payment);
+    return sendChainlinkRequestTo(ptolemy, _req, _payment);
   }
 
   /**
@@ -76,15 +76,15 @@ contract ChainlinkClient {
    * @param _payment The amount of LINK to send for the request
    * @return The request ID
    */
-  function sendChainlinkRequestTo(address _oracle, Chainlink.Request memory _req, uint256 _payment)
+  function sendChainlinkRequestTo(address _ptolemy, Chainlink.Request memory _req, uint256 _payment)
     internal
     returns (bytes32 requestId)
   {
     requestId = keccak256(abi.encodePacked(this, requests));
     _req.nonce = requests;
-    pendingRequests[requestId] = _oracle;
+    pendingRequests[requestId] = _ptolemy;
     emit ChainlinkRequested(requestId);
-    require(link.transferAndCall(_oracle, _payment, encodeRequest(_req)), "unable to transferAndCall to oracle");
+    require(link.transferAndCall(_ptolemy, _payment, encodeRequest(_req)), "unable to transferAndCall to oracle");
     requests += 1;
 
     return requestId;
@@ -111,15 +111,15 @@ contract ChainlinkClient {
     ChainlinkRequestInterface requested = ChainlinkRequestInterface(pendingRequests[_requestId]);
     delete pendingRequests[_requestId];
     emit ChainlinkCancelled(_requestId);
-    requested.cancelOracleRequest(_requestId, _payment, _callbackFunc, _expiration);
+    requested.cancelPtolemyRequest(_requestId, _payment, _callbackFunc, _expiration);
   }
 
   /**
    * @notice Sets the stored oracle address
    * @param _oracle The address of the oracle contract
    */
-  function setChainlinkOracle(address _oracle) internal {
-    oracle = ChainlinkRequestInterface(_oracle);
+  function setChainlinkPtolemy(address _ptolemy) internal {
+    ptolemy = ChainlinkRequestInterface(_ptolemy);
   }
 
   /**
@@ -154,12 +154,12 @@ contract ChainlinkClient {
    * @notice Retrieves the stored address of the oracle contract
    * @return The address of the oracle contract
    */
-  function chainlinkOracleAddress()
+  function chainlinkPtolemyAddress()
     internal
     view
     returns (address)
   {
-    return address(oracle);
+    return address(ptolemy);
   }
 
   /**
@@ -168,11 +168,11 @@ contract ChainlinkClient {
    * @param _oracle The address of the oracle contract that will fulfill the request
    * @param _requestId The request ID used for the response
    */
-  function addChainlinkExternalRequest(address _oracle, bytes32 _requestId)
+  function addChainlinkExternalRequest(address _ptolemy, bytes32 _requestId)
     internal
     notPendingRequest(_requestId)
   {
-    pendingRequests[_requestId] = _oracle;
+    pendingRequests[_requestId] = _ptolemy;
   }
 
   /**
@@ -189,19 +189,19 @@ contract ChainlinkClient {
     bytes32 linkSubnode = keccak256(abi.encodePacked(ensNode, ENS_TOKEN_SUBNAME));
     ENSResolver_Chainlink resolver = ENSResolver_Chainlink(ens.resolver(linkSubnode));
     setChainlinkToken(resolver.addr(linkSubnode));
-    updateChainlinkOracleWithENS();
+    updateChainlinkPtolemyWithENS();
   }
 
   /**
    * @notice Sets the stored oracle contract with the address resolved by ENS
    * @dev This may be called on its own as long as `useChainlinkWithENS` has been called previously
    */
-  function updateChainlinkOracleWithENS()
+  function updateChainlinkPtolemyWithENS()
     internal
   {
-    bytes32 oracleSubnode = keccak256(abi.encodePacked(ensNode, ENS_ORACLE_SUBNAME));
-    ENSResolver_Chainlink resolver = ENSResolver_Chainlink(ens.resolver(oracleSubnode));
-    setChainlinkOracle(resolver.addr(oracleSubnode));
+    bytes32 ptolemySubnode = keccak256(abi.encodePacked(ensNode, ENS_ORACLE_SUBNAME));
+    ENSResolver_Chainlink resolver = ENSResolver_Chainlink(ens.resolver(ptolemySubnode));
+    setChainlinkPtolemy(resolver.addr(ptolemySubnode));
   }
 
   /**
@@ -217,7 +217,7 @@ contract ChainlinkClient {
     returns (bytes memory)
   {
     return abi.encodeWithSelector(
-      oracle.oracleRequest.selector,
+      ptolemy.ptolemyRequest.selector,
       SENDER_OVERRIDE, // Sender value - overridden by onTokenTransfer by the requesting contract's address
       AMOUNT_OVERRIDE, // Amount value - overridden by onTokenTransfer by the actual amount of LINK sent
       _req.id,
