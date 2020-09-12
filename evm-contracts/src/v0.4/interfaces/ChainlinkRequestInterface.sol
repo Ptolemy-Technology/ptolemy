@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 interface ChainlinkRequestInterface {
-  function oracleRequest(
+  function ptolemyRequest(
     address sender,
     uint256 payment,
     bytes32 id,
@@ -12,7 +12,7 @@ interface ChainlinkRequestInterface {
     bytes data
   ) external;
 
-  function cancelOracleRequest(
+  function cancelPtolemyRequest(
     bytes32 requestId,
     uint256 payment,
     bytes4 callbackFunctionId,
