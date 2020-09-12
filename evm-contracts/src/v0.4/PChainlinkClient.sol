@@ -3,7 +3,7 @@ pragma solidity ^0.4.24;
 import "./Chainlink.sol";
 import "./interfaces/ENSInterface.sol";
 import "./interfaces/LinkTokenInterface.sol";
-import "./interfaces/PChainlinkRequestInterface.sol";
+import "https://github.com/Ptolemy-Technology/ptolemy/evm-contracts/src/v0.4/interfaces/PChainlinkRequestInterface.sol";
 import "./interfaces/PointerInterface.sol";
 import { ENSResolver as ENSResolver_Chainlink } from "./vendor/ENSResolver.sol";
 import { SafeMath as SafeMath_Chainlink } from "./vendor/SafeMath.sol";
