@@ -75,7 +75,8 @@ contract Ptolemy is ChainlinkRequestInterface, PtolemyInterface, Ownable {
       mstore(add(_data, 68), _amount) // ensure correct amount is passed
     }
     // solhint-disable-next-line avoid-low-level-calls
-    require(address(this).delegatecall(_data), "Unable to create request"); // calls ptolemyRequest
+    require(false, "Unable to create request"); // calls ptolemyRequest
+    //address(this).delegatecall(_data)
   }
 
   /**
