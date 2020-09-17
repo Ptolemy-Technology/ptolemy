@@ -3,7 +3,7 @@ pragma solidity ^0.4.24;
 import "./Chainlink.sol";
 import "./interfaces/ENSInterface.sol";
 import "./interfaces/LinkTokenInterface.sol";
-import "https://github.com/Ptolemy-Technology/ptolemy/evm-contracts/src/v0.4/interfaces/ChainlinkRequestInterface.sol";
+import "./interfaces/ChainlinkRequestInterface.sol";
 import "./interfaces/PointerInterface.sol";
 import { ENSResolver as ENSResolver_Chainlink } from "./vendor/ENSResolver.sol";
 import { SafeMath as SafeMath_Chainlink } from "./vendor/SafeMath.sol";
@@ -22,7 +22,7 @@ contract ChainlinkClient {
   address constant private SENDER_OVERRIDE = 0x0;
   uint256 constant private ARGS_VERSION = 1;
   bytes32 constant private ENS_TOKEN_SUBNAME = keccak256("link");
-  bytes32 constant private ENS_ORACLE_SUBNAME = keccak256("oracle");
+  bytes32 constant private ENS_PTOLEMY_SUBNAME = keccak256("ptolemy");
   address constant private LINK_TOKEN_POINTER = 0xC89bD4E1632D3A43CB03AAAd5262cbe4038Bc571;
 
   ENSInterface private ens;
@@ -53,8 +53,8 @@ contract ChainlinkClient {
   }
 
   /**
-   * @notice Creates a Chainlink request to the stored oracle address
-   * @dev Calls `chainlinkRequestTo` with the stored oracle address
+   * @notice Creates a Chainlink request to the stored ptolemy address
+   * @dev Calls `chainlinkRequestTo` with the stored ptolemy address
    * @param _req The initialized Chainlink Request
    * @param _payment The amount of LINK to send for the request
    * @return The request ID
@@ -67,11 +67,11 @@ contract ChainlinkClient {
   }
 
   /**
-   * @notice Creates a Chainlink request to the specified oracle address
+   * @notice Creates a Chainlink request to the specified ptolemy address
    * @dev Generates and stores a request ID, increments the local nonce, and uses `transferAndCall` to
-   * send LINK which creates a request on the target oracle contract.
+   * send LINK which creates a request on the target ptolemy contract.
    * Emits ChainlinkRequested event.
-   * @param _ptolemy The address of the oracle for the request
+   * @param _ptolemy The address of the ptolemy for the request
    * @param _req The initialized Chainlink Request
    * @param _payment The amount of LINK to send for the request
    * @return The request ID
@@ -84,7 +84,7 @@ contract ChainlinkClient {
     _req.nonce = requests;
     pendingRequests[requestId] = _ptolemy;
     emit ChainlinkRequested(requestId);
-    require(link.transferAndCall(_ptolemy, _payment, encodeRequest(_req)), "unable to transferAndCall to oracle");
+    require(link.transferAndCall(_ptolemy, _payment, encodeRequest(_req)), "unable to transferAndCall to ptolemy");
     requests += 1;
 
     return requestId;
@@ -92,7 +92,7 @@ contract ChainlinkClient {
 
   /**
    * @notice Allows a request to be cancelled if it has not been fulfilled
-   * @dev Requires keeping track of the expiration value emitted from the oracle contract.
+   * @dev Requires keeping track of the expiration value emitted from the ptolemy contract.
    * Deletes the request from the `pendingRequests` mapping.
    * Emits ChainlinkCancelled event.
    * @param _requestId The request ID
@@ -115,8 +115,8 @@ contract ChainlinkClient {
   }
 
   /**
-   * @notice Sets the stored oracle address
-   * @param _ptolemy The address of the oracle contract
+   * @notice Sets the stored ptolemy address
+   * @param _ptolemy The address of the ptolemy contract
    */
   function setChainlinkPtolemy(address _ptolemy) internal {
     ptolemy = ChainlinkRequestInterface(_ptolemy);
@@ -151,8 +151,8 @@ contract ChainlinkClient {
   }
 
   /**
-   * @notice Retrieves the stored address of the oracle contract
-   * @return The address of the oracle contract
+   * @notice Retrieves the stored address of the ptolemy contract
+   * @return The address of the ptolemy contract
    */
   function chainlinkPtolemyAddress()
     internal
@@ -165,7 +165,7 @@ contract ChainlinkClient {
   /**
    * @notice Allows for a request which was created on another contract to be fulfilled
    * on this contract
-   * @param _ptolemy The address of the oracle contract that will fulfill the request
+   * @param _ptolemy The address of the ptolemy contract that will fulfill the request
    * @param _requestId The request ID used for the response
    */
   function addChainlinkExternalRequest(address _ptolemy, bytes32 _requestId)
@@ -176,7 +176,7 @@ contract ChainlinkClient {
   }
 
   /**
-   * @notice Sets the stored oracle and LINK token contracts with the addresses resolved by ENS
+   * @notice Sets the stored ptolemy and LINK token contracts with the addresses resolved by ENS
    * @dev Accounts for subnodes having different resolvers
    * @param _ens The address of the ENS contract
    * @param _node The ENS node hash
@@ -193,21 +193,21 @@ contract ChainlinkClient {
   }
 
   /**
-   * @notice Sets the stored oracle contract with the address resolved by ENS
+   * @notice Sets the stored ptolemy contract with the address resolved by ENS
    * @dev This may be called on its own as long as `useChainlinkWithENS` has been called previously
    */
   function updateChainlinkPtolemyWithENS()
     internal
   {
-    bytes32 ptolemySubnode = keccak256(abi.encodePacked(ensNode, ENS_ORACLE_SUBNAME));
+    bytes32 ptolemySubnode = keccak256(abi.encodePacked(ensNode, ENS_PTOLEMY_SUBNAME));
     ENSResolver_Chainlink resolver = ENSResolver_Chainlink(ens.resolver(ptolemySubnode));
     setChainlinkPtolemy(resolver.addr(ptolemySubnode));
   }
 
   /**
-   * @notice Encodes the request to be sent to the oracle contract
+   * @notice Encodes the request to be sent to the ptolemy contract
    * @dev The Chainlink node expects values to be in order for the request to be picked up. Order of types
-   * will be validated in the oracle contract.
+   * will be validated in the ptolemy contract.
    * @param _req The initialized Chainlink Request
    * @return The bytes payload for the `transferAndCall` method
    */
@@ -240,12 +240,12 @@ contract ChainlinkClient {
   {}
 
   /**
-   * @dev Reverts if the sender is not the oracle of the request.
+   * @dev Reverts if the sender is not the ptolemy of the request.
    * Emits ChainlinkFulfilled event.
    * @param _requestId The request ID for fulfillment
    */
   modifier recordChainlinkFulfillment(bytes32 _requestId) {
-    require(msg.sender == pendingRequests[_requestId], "Source must be the oracle of the request");
+    require(msg.sender == pendingRequests[_requestId], "Source must be the ptolemy of the request");
     delete pendingRequests[_requestId];
     emit ChainlinkFulfilled(_requestId);
     _;

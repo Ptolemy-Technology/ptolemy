@@ -28,7 +28,7 @@ contract Aggregator is AggregatorInterface, ChainlinkClient, Ownable {
   uint128 public paymentAmount;
   uint128 public minimumResponses;
   bytes32[] public jobIds;
-  address[] public oracles;
+  address[] public ptolemys;
 
   uint256 private answerCounter = 1;
   mapping(address => bool) public authorizedRequesters;
@@ -37,34 +37,34 @@ contract Aggregator is AggregatorInterface, ChainlinkClient, Ownable {
   mapping(uint256 => int256) private currentAnswers;
   mapping(uint256 => uint256) private updatedTimestamps;
 
-  uint256 constant private MAX_ORACLE_COUNT = 28;
+  uint256 constant private MAX_PTOLEMY_COUNT = 28;
 
   /**
    * @notice Deploy with the address of the LINK token and arrays of matching
-   * length containing the addresses of the oracles and their corresponding
+   * length containing the addresses of the ptolemys and their corresponding
    * Job IDs.
-   * @dev Sets the LinkToken address for the network, addresses of the oracles,
+   * @dev Sets the LinkToken address for the network, addresses of the ptolemys,
    * and jobIds in storage.
    * @param _link The address of the LINK token
-   * @param _paymentAmount the amount of LINK to be sent to each oracle for each request
+   * @param _paymentAmount the amount of LINK to be sent to each ptolemy for each request
    * @param _minimumResponses the minimum number of responses
    * before an answer will be calculated
-   * @param _oracles An array of oracle addresses
+   * @param _ptolemys An array of ptolemy addresses
    * @param _jobIds An array of Job IDs
    */
   constructor(
     address _link,
     uint128 _paymentAmount,
     uint128 _minimumResponses,
-    address[] _oracles,
+    address[] _ptolemys,
     bytes32[] _jobIds
   ) public Ownable() {
     setChainlinkToken(_link);
-    updateRequestDetails(_paymentAmount, _minimumResponses, _oracles, _jobIds);
+    updateRequestDetails(_paymentAmount, _minimumResponses, _ptolemys, _jobIds);
   }
 
   /**
-   * @notice Creates a Chainlink request for each oracle in the oracles array.
+   * @notice Creates a Chainlink request for each ptolemy in the ptolemys array.
    * @dev This example does not include request parameters. Reference any documentation
    * associated with the Job IDs used to determine the required parameters per-request.
    */
@@ -74,15 +74,15 @@ contract Aggregator is AggregatorInterface, ChainlinkClient, Ownable {
   {
     Chainlink.Request memory request;
     bytes32 requestId;
-    uint256 oraclePayment = paymentAmount;
+    uint256 ptolemyPayment = paymentAmount;
 
-    for (uint i = 0; i < oracles.length; i++) {
+    for (uint i = 0; i < ptolemys.length; i++) {
       request = buildChainlinkRequest(jobIds[i], this, this.chainlinkCallback.selector);
-      requestId = sendChainlinkRequestTo(oracles[i], request, oraclePayment);
+      requestId = sendChainlinkRequestTo(ptolemys[i], request, ptolemyPayment);
       requestAnswers[requestId] = answerCounter;
     }
     answers[answerCounter].minimumResponses = minimumResponses;
-    answers[answerCounter].maxResponses = uint128(oracles.length);
+    answers[answerCounter].maxResponses = uint128(ptolemys.length);
 
     emit NewRound(answerCounter, msg.sender, block.timestamp);
 
@@ -91,7 +91,7 @@ contract Aggregator is AggregatorInterface, ChainlinkClient, Ownable {
 
   /**
    * @notice Receives the answer from the Chainlink node.
-   * @dev This function can only be called by the oracle that received the request.
+   * @dev This function can only be called by the ptolemy that received the request.
    * @param _clRequestId The Chainlink request ID associated with the answer
    * @param _response The answer provided by the Chainlink node
    */
@@ -110,29 +110,29 @@ contract Aggregator is AggregatorInterface, ChainlinkClient, Ownable {
   }
 
   /**
-   * @notice Updates the arrays of oracles and jobIds with new values,
+   * @notice Updates the arrays of ptolemys and jobIds with new values,
    * overwriting the old values.
    * @dev Arrays are validated to be equal length.
-   * @param _paymentAmount the amount of LINK to be sent to each oracle for each request
+   * @param _paymentAmount the amount of LINK to be sent to each ptolemy for each request
    * @param _minimumResponses the minimum number of responses
    * before an answer will be calculated
-   * @param _oracles An array of oracle addresses
+   * @param _ptolemys An array of ptolemy addresses
    * @param _jobIds An array of Job IDs
    */
   function updateRequestDetails(
     uint128 _paymentAmount,
     uint128 _minimumResponses,
-    address[] _oracles,
+    address[] _ptolemys,
     bytes32[] _jobIds
   )
     public
     onlyOwner()
-    validateAnswerRequirements(_minimumResponses, _oracles, _jobIds)
+    validateAnswerRequirements(_minimumResponses, _ptolemys, _jobIds)
   {
     paymentAmount = _paymentAmount;
     minimumResponses = _minimumResponses;
     jobIds = _jobIds;
-    oracles = _oracles;
+    ptolemys = _ptolemys;
   }
 
   /**
@@ -152,7 +152,7 @@ contract Aggregator is AggregatorInterface, ChainlinkClient, Ownable {
 
   /**
    * @notice Called by the owner to permission other addresses to generate new
-   * requests to oracles.
+   * requests to ptolemys.
    * @param _requester the address whose permissions are being set
    * @param _allowed boolean that determines whether the requester is
    * permissioned or not
@@ -166,10 +166,10 @@ contract Aggregator is AggregatorInterface, ChainlinkClient, Ownable {
 
   /**
    * @notice Cancels an outstanding Chainlink request.
-   * The oracle contract requires the request ID and additional metadata to
+   * The ptolemy contract requires the request ID and additional metadata to
    * validate the cancellation. Only old answers can be cancelled.
    * @param _requestId is the identifier for the chainlink request being cancelled
-   * @param _payment is the amount of LINK paid to the oracle for the request
+   * @param _payment is the amount of LINK paid to the ptolemy for the request
    * @param _expiration is the time when the request expires
    */
   function cancelRequest(
@@ -210,7 +210,7 @@ contract Aggregator is AggregatorInterface, ChainlinkClient, Ownable {
 
   /**
    * @dev Performs aggregation of the answers received from the Chainlink nodes.
-   * Assumes that at least half the oracles are honest and so can't contol the
+   * Assumes that at least half the ptolemys are honest and so can't contol the
    * middle of the ordered responses.
    * @param _answerId The answer ID associated with the group of requests
    */
@@ -398,18 +398,18 @@ contract Aggregator is AggregatorInterface, ChainlinkClient, Ownable {
   }
 
   /**
-   * @dev Ensures corresponding number of oracles and jobs.
-   * @param _oracles The list of oracles.
+   * @dev Ensures corresponding number of ptolemys and jobs.
+   * @param _ptolemys The list of ptolemys.
    * @param _jobIds The list of jobs.
    */
   modifier validateAnswerRequirements(
     uint256 _minimumResponses,
-    address[] _oracles,
+    address[] _ptolemys,
     bytes32[] _jobIds
   ) {
-    require(_oracles.length <= MAX_ORACLE_COUNT, "cannot have more than 45 oracles");
-    require(_oracles.length >= _minimumResponses, "must have at least as many oracles as responses");
-    require(_oracles.length == _jobIds.length, "must have exactly as many oracles as job IDs");
+    require(_ptolemys.length <= MAX_PTOLEMY_COUNT, "cannot have more than 45 ptolemys");
+    require(_ptolemys.length >= _minimumResponses, "must have at least as many ptolemys as responses");
+    require(_ptolemys.length == _jobIds.length, "must have exactly as many ptolemys as job IDs");
     _;
   }
 

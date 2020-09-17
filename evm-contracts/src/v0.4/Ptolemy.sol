@@ -2,8 +2,8 @@ pragma solidity 0.4.24;
 
 import "./vendor/Ownable.sol";
 import "./vendor/SafeMath.sol";
-import "https://github.com/Ptolemy-Technology/ptolemy/evm-contracts/src/v0.4/interfaces/ChainlinkRequestInterface.sol";
-import "https://github.com/Ptolemy-Technology/ptolemy/evm-contracts/src/v0.4/interfaces/PtolemyInterface.sol";
+import "./interfaces/ChainlinkRequestInterface.sol";
+import "./interfaces/PtolemyInterface.sol";
 import "./interfaces/LinkTokenInterface.sol";
 
 /**
@@ -55,7 +55,7 @@ contract Ptolemy is ChainlinkRequestInterface, PtolemyInterface, Ownable {
   /**
    * @notice Called when LINK is sent to the contract via `transferAndCall`
    * @dev The data payload's first 2 words will be overwritten by the `_sender` and `_amount`
-   * values to ensure correctness. Calls PtolemyRequest.
+   * values to ensure correctness. Calls ptolemyRequest.
    * @param _sender Address of the sender
    * @param _amount Amount of LINK sent (specified in wei)
    * @param _data Payload of the transaction
@@ -75,8 +75,7 @@ contract Ptolemy is ChainlinkRequestInterface, PtolemyInterface, Ownable {
       mstore(add(_data, 68), _amount) // ensure correct amount is passed
     }
     // solhint-disable-next-line avoid-low-level-calls
-    require(false, "Unable to create request"); // calls ptolemyRequest
-    //address(this).delegatecall(_data)
+    require(address(this).delegatecall(_data), "Unable to create request"); // calls ptolemyRequest
   }
 
   /**
@@ -134,11 +133,11 @@ contract Ptolemy is ChainlinkRequestInterface, PtolemyInterface, Ownable {
 
   /**
    * @notice Called by the Chainlink node to fulfill requests
-   * @dev Given params must hash back to the commitment stored from `PtolemyRequest`.
+   * @dev Given params must hash back to the commitment stored from `ptolemyRequest`.
    * Will call the callback address' callback function without bubbling up error
    * checking in a `require` so that the node can get paid.
    * @param _requestId The fulfillment request ID that must match the requester's
-   * @param _payment The payment amount that will be released for the Ptolemy (specified in wei)
+   * @param _payment The payment amount that will be released for the ptolemy (specified in wei)
    * @param _callbackAddress The callback address to call for fulfillment
    * @param _callbackFunctionId The callback function ID to use for fulfillment
    * @param _expiration The expiration that the node should respond by before the requester can cancel
@@ -170,7 +169,7 @@ contract Ptolemy is ChainlinkRequestInterface, PtolemyInterface, Ownable {
     withdrawableTokens = withdrawableTokens.add(_payment);
     delete commitments[_requestId];
     require(gasleft() >= MINIMUM_CONSUMER_GAS_LIMIT, "Must provide consumer enough gas");
-    // All updates to the Ptolemy's fulfillment should come before calling the
+    // All updates to the ptolemy's fulfillment should come before calling the
     // callback(addr+functionId) as it is untrusted.
     // See: https://solidity.readthedocs.io/en/develop/security-considerations.html#use-the-checks-effects-interactions-pattern
     return _callbackAddress.call(_callbackFunctionId, _requestId, _data); // solhint-disable-line avoid-low-level-calls
@@ -219,7 +218,7 @@ contract Ptolemy is ChainlinkRequestInterface, PtolemyInterface, Ownable {
   }
 
   /**
-   * @notice Allows requesters to cancel requests sent to this Ptolemy contract. Will transfer the LINK
+   * @notice Allows requesters to cancel requests sent to this ptolemy contract. Will transfer the LINK
    * sent for the request back to the requester's address.
    * @dev Given params must hash to a commitment stored on the contract in order for the request to be valid
    * Emits CancelPtolemyRequest event.
@@ -288,7 +287,7 @@ contract Ptolemy is ChainlinkRequestInterface, PtolemyInterface, Ownable {
   }
 
   /**
-   * @dev Reverts if the given data does not begin with the `PtolemyRequest` function selector
+   * @dev Reverts if the given data does not begin with the `ptolemyRequest` function selector
    * @param _data The data payload of the request
    */
   modifier permittedFunctionsForLINK(bytes _data) {

@@ -24,8 +24,8 @@ contract Chainlinked is ChainlinkClient {
   }
 
   /**
-   * @notice Creates a Chainlink request to the stored oracle address
-   * @dev Calls `sendChainlinkRequestTo` with the stored oracle address
+   * @notice Creates a Chainlink request to the stored ptolemy address
+   * @dev Calls `sendChainlinkRequestTo` with the stored ptolemy address
    * @param _req The initialized Chainlink Request
    * @param _payment The amount of LINK to send for the request
    * @return The request ID
@@ -38,28 +38,28 @@ contract Chainlinked is ChainlinkClient {
   }
 
   /**
-   * @notice Creates a Chainlink request to the specified oracle address
+   * @notice Creates a Chainlink request to the specified ptolemy address
    * @dev Generates and stores a request ID, increments the local nonce, and uses `transferAndCall` to
-   * send LINK which creates a request on the target oracle contract.
+   * send LINK which creates a request on the target ptolemy contract.
    * Emits ChainlinkRequested event.
-   * @param _oracle The address of the oracle for the request
+   * @param _ptolemy The address of the ptolemy for the request
    * @param _req The initialized Chainlink Request
    * @param _payment The amount of LINK to send for the request
    * @return The request ID
    */
-  function chainlinkRequestTo(address _oracle, Chainlink.Request memory _req, uint256 _payment)
+  function chainlinkRequestTo(address _ptolemy, Chainlink.Request memory _req, uint256 _payment)
     internal
     returns (bytes32 requestId)
   {
-    return sendChainlinkRequestTo(_oracle, _req, _payment);
+    return sendChainlinkRequestTo(_ptolemy, _req, _payment);
   }
 
   /**
-   * @notice Sets the stored oracle address
-   * @param _oracle The address of the oracle contract
+   * @notice Sets the stored ptolemy address
+   * @param _ptolemy The address of the ptolemy contract
    */
-  function setOracle(address _oracle) internal {
-    setChainlinkOracle(_oracle);
+  function setPtolemy(address _ptolemy) internal {
+    setChainlinkPtolemy(_ptolemy);
   }
 
   /**
@@ -83,15 +83,15 @@ contract Chainlinked is ChainlinkClient {
   }
 
   /**
-   * @notice Retrieves the stored address of the oracle contract
-   * @return The address of the oracle contract
+   * @notice Retrieves the stored address of the ptolemy contract
+   * @return The address of the ptolemy contract
    */
-  function oracleAddress()
+  function ptolemyAddress()
     internal
     view
     returns (address)
   {
-    return chainlinkOracleAddress();
+    return chainlinkPtolemyAddress();
   }
 
   /**
@@ -106,7 +106,7 @@ contract Chainlinked is ChainlinkClient {
   {}
 
   /**
-   * @notice Sets the stored oracle and LINK token contracts with the addresses resolved by ENS
+   * @notice Sets the stored ptolemy and LINK token contracts with the addresses resolved by ENS
    * @dev Accounts for subnodes having different resolvers
    * @param _ens The address of the ENS contract
    * @param _node The ENS node hash
@@ -118,24 +118,24 @@ contract Chainlinked is ChainlinkClient {
   }
 
   /**
-   * @notice Sets the stored oracle contract with the address resolved by ENS
+   * @notice Sets the stored ptolemy contract with the address resolved by ENS
    * @dev This may be called on its own as long as `setChainlinkWithENS` has been called previously
    */
-  function setOracleWithENS()
+  function setPtolemyWithENS()
     internal
   {
-    updateChainlinkOracleWithENS();
+    updateChainlinkPtolemyWithENS();
   }
 
   /**
    * @notice Allows for a request which was created on another contract to be fulfilled
    * on this contract
-   * @param _oracle The address of the oracle contract that will fulfill the request
+   * @param _ptolemy The address of the ptolemy contract that will fulfill the request
    * @param _requestId The request ID used for the response
    */
-  function addExternalRequest(address _oracle, bytes32 _requestId)
+  function addExternalRequest(address _ptolemy, bytes32 _requestId)
     internal
   {
-    addChainlinkExternalRequest(_oracle, _requestId);
+    addChainlinkExternalRequest(_ptolemy, _requestId);
   }
 }
