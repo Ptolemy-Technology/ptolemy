@@ -5,12 +5,12 @@ import "../Chainlinked.sol";
 
 
 contract MaliciousConsumer is Chainlinked {
-  uint256 constant private ORACLE_PAYMENT = 1 * LINK;
+  uint256 constant private PTOLEMY_PAYMENT = 1 * LINK;
   uint256 private expiration;
 
-  constructor(address _link, address _oracle) public payable {
+  constructor(address _link, address _ptolemy) public payable {
     setLinkToken(_link);
-    setOracle(_oracle);
+    setPtolemy(_ptolemy);
   }
 
   function () public payable {} // solhint-disable-line no-empty-blocks
@@ -18,7 +18,7 @@ contract MaliciousConsumer is Chainlinked {
   function requestData(bytes32 _id, bytes _callbackFunc) public {
     Chainlink.Request memory req = newRequest(_id, this, bytes4(keccak256(_callbackFunc)));
     expiration = now.add(5 minutes); // solhint-disable-line not-rely-on-time
-    chainlinkRequest(req, ORACLE_PAYMENT);
+    chainlinkRequest(req, PTOLEMY_PAYMENT);
   }
 
   function assertFail(bytes32, bytes32) public pure {
@@ -28,7 +28,7 @@ contract MaliciousConsumer is Chainlinked {
   function cancelRequestOnFulfill(bytes32 _requestId, bytes32) public {
     cancelChainlinkRequest(
       _requestId,
-      ORACLE_PAYMENT,
+      PTOLEMY_PAYMENT,
       this.cancelRequestOnFulfill.selector,
       expiration);
   }

@@ -5,9 +5,9 @@ import "../Chainlinked.sol";
 
 contract ConcreteChainlinked is Chainlinked {
 
-  constructor(address _link, address _oracle) public {
+  constructor(address _link, address _ptolemy) public {
     setLinkToken(_link);
-    setOracle(_oracle);
+    setPtolemy(_ptolemy);
   }
 
   event Request(
@@ -48,7 +48,7 @@ contract ConcreteChainlinked is Chainlinked {
   }
 
   function publicRequestRunTo(
-    address _oracle,
+    address _ptolemy,
     bytes32 _id,
     address _address,
     bytes _fulfillmentSignature,
@@ -57,7 +57,7 @@ contract ConcreteChainlinked is Chainlinked {
     public
   {
     Chainlink.Request memory run = newRequest(_id, _address, bytes4(keccak256(_fulfillmentSignature)));
-    chainlinkRequestTo(_oracle, run, _wei);
+    chainlinkRequestTo(_ptolemy, run, _wei);
   }
 
   function publicCancelRequest(
@@ -88,13 +88,13 @@ contract ConcreteChainlinked is Chainlinked {
     emit LinkAmount(LINK.mul(_amount));
   }
 
-  function publicOracleAddress() public view returns (address) {
-    return oracleAddress();
+  function publicPtolemyAddress() public view returns (address) {
+    return ptolemyAddress();
   }
 
-  function publicAddExternalRequest(address _oracle, bytes32 _requestId)
+  function publicAddExternalRequest(address _ptolemy, bytes32 _requestId)
     public
   {
-    addExternalRequest(_oracle, _requestId);
+    addExternalRequest(_ptolemy, _requestId);
   }
 }

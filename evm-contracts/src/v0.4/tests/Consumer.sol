@@ -6,7 +6,7 @@ contract Consumer is ChainlinkClient {
   bytes32 internal specId;
   bytes32 public currentPrice;
 
-  uint256 constant private ORACLE_PAYMENT = 1 * LINK;
+  uint256 constant private PTOLEMY_PAYMENT = 1 * LINK;
 
   event RequestFulfilled(
     bytes32 indexed requestId,  // User-defined ID
@@ -19,7 +19,7 @@ contract Consumer is ChainlinkClient {
     string[] memory path = new string[](1);
     path[0] = _currency;
     req.addStringArray("path", path);
-    sendChainlinkRequest(req, ORACLE_PAYMENT);
+    sendChainlinkRequest(req, PTOLEMY_PAYMENT);
   }
 
   function cancelRequest(

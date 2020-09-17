@@ -28,10 +28,10 @@ contract MaliciousChainlinked is Chainlinked {
   {
     requestId = keccak256(abi.encodePacked(_target, maliciousRequests));
     _req.nonce = maliciousRequests;
-    maliciousPendingRequests[requestId] = oracleAddress();
+    maliciousPendingRequests[requestId] = ptolemyAddress();
     emit ChainlinkRequested(requestId);
     LinkTokenInterface link = LinkTokenInterface(chainlinkToken());
-    require(link.transferAndCall(oracleAddress(), _amount, encodeTargetRequest(_req)), "Unable to transferAndCall to oracle");
+    require(link.transferAndCall(ptolemyAddress(), _amount, encodeTargetRequest(_req)), "Unable to transferAndCall to ptolemy");
     maliciousRequests += 1;
 
     return requestId;
@@ -43,10 +43,10 @@ contract MaliciousChainlinked is Chainlinked {
   {
     requestId = keccak256(abi.encodePacked(this, maliciousRequests));
     _req.nonce = maliciousRequests;
-    maliciousPendingRequests[requestId] = oracleAddress();
+    maliciousPendingRequests[requestId] = ptolemyAddress();
     emit ChainlinkRequested(requestId);
     LinkTokenInterface link = LinkTokenInterface(chainlinkToken());
-    require(link.transferAndCall(oracleAddress(), _amount, encodePriceRequest(_req)), "Unable to transferAndCall to oracle");
+    require(link.transferAndCall(ptolemyAddress(), _amount, encodePriceRequest(_req)), "Unable to transferAndCall to ptolemy");
     maliciousRequests += 1;
 
     return requestId;
@@ -58,10 +58,10 @@ contract MaliciousChainlinked is Chainlinked {
   {
     requestId = keccak256(abi.encodePacked(this, maliciousRequests));
     _req.nonce = maliciousRequests;
-    maliciousPendingRequests[requestId] = oracleAddress();
+    maliciousPendingRequests[requestId] = ptolemyAddress();
     emit ChainlinkRequested(requestId);
     LinkTokenInterface link = LinkTokenInterface(chainlinkToken());
-    require(link.transferAndCall(oracleAddress(), _wei, encodeWithdrawRequest(_req)), "Unable to transferAndCall to oracle");
+    require(link.transferAndCall(ptolemyAddress(), _wei, encodeWithdrawRequest(_req)), "Unable to transferAndCall to ptolemy");
     maliciousRequests += 1;
     return requestId;
   }
@@ -81,7 +81,7 @@ contract MaliciousChainlinked is Chainlinked {
     internal pure returns (bytes memory)
   {
     return abi.encodeWithSelector(
-      bytes4(keccak256("oracleRequest(address,uint256,bytes32,address,bytes4,uint256,uint256,bytes)")),
+      bytes4(keccak256("ptolemyRequest(address,uint256,bytes32,address,bytes4,uint256,uint256,bytes)")),
       0, // overridden by onTokenTransfer
       0, // overridden by onTokenTransfer
       _req.id,
@@ -96,7 +96,7 @@ contract MaliciousChainlinked is Chainlinked {
     internal pure returns (bytes memory)
   {
     return abi.encodeWithSelector(
-      bytes4(keccak256("oracleRequest(address,uint256,bytes32,address,bytes4,uint256,uint256,bytes)")),
+      bytes4(keccak256("ptolemyRequest(address,uint256,bytes32,address,bytes4,uint256,uint256,bytes)")),
       0, // overridden by onTokenTransfer
       2000000000000000000, // overridden by onTokenTransfer
       _req.id,

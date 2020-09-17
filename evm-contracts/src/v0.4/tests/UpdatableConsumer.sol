@@ -9,16 +9,16 @@ contract UpdatableConsumer is Consumer {
     useChainlinkWithENS(_ens, _node);
   }
 
-  function updateOracle() public {
-    updateChainlinkOracleWithENS();
+  function updatePtolemy() public {
+    updateChainlinkPtolemyWithENS();
   }
 
   function getChainlinkToken() public view returns (address) {
     return chainlinkTokenAddress();
   }
 
-  function getOracle() public view returns (address) {
-    return chainlinkOracleAddress();
+  function getPtolemy() public view returns (address) {
+    return chainlinkPtolemyAddress();
   }
 
 }
